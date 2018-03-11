@@ -1,7 +1,7 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
 // import {IntlMixin} from 'react-intl';
-import MyMixin from './IntlMixin';
+import MyMixin, { Message } from './IntlMixin';
 
 const Greeting = createReactClass({
   mixins: [MyMixin],
@@ -10,6 +10,7 @@ const Greeting = createReactClass({
       <div>
         <h1>Hello, {this.props.name}</h1>
         {this.loc('test.static')}
+        <Message id="greeting" />
       </div>
     );
   }
