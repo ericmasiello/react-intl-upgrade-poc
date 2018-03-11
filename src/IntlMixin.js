@@ -2,14 +2,31 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {IntlProvider, injectIntl, FormattedMessage} from 'react-intl';
 
+let intlFormatMessage;
+
+class IntlMessage extends React.Component {
+  componentWillMount() {
+    if (!intlFormatMessage) {
+      intlFormatMessage = this.props.intl.formatMessage;
+    }
+  }
+
+  render() {
+    return this.props.children;
+  }
+}
+
 export const withIntl = (Component) => {
   const InjectedComponent = injectIntl(Component);
+  const WrappedIntlMessage = injectIntl(IntlMessage);
 
   function WithIntl(props) {
     const { locale, messages, ...rest } = props;
     return (
       <IntlProvider locale={locale} messages={messages}>
-        <InjectedComponent {...rest} />
+        <WrappedIntlMessage>
+          <InjectedComponent {...rest} />
+        </WrappedIntlMessage>
       </IntlProvider>
     );
   }
@@ -24,16 +41,20 @@ export const withIntl = (Component) => {
   return WithIntl;
 };
 
+let didWarnOfMixin = false;
+
 const Mixin = {
   loc: (id) => {
-    const T = (
-      <FormattedMessage id={id} />
-    );
+    if (!didWarnOfMixin) {
+      console.warn('Please stop using mixins.')
+      didWarnOfMixin = true;
+    }
 
-    return T;
+    if (intlFormatMessage) {
+      return intlFormatMessage({ id });
+    }
+    return <FormattedMessage id={id} />;
   },
 };
-
-export const Message = FormattedMessage;
 
 export default Mixin;
