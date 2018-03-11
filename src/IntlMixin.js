@@ -1,12 +1,39 @@
-import * as ReactIntl from 'react-intl';
+import React from 'react';
+import PropTypes from 'prop-types';
+import {IntlProvider, injectIntl, FormattedMessage} from 'react-intl';
 
-console.log('ReactIntl', ReactIntl);
+export const withIntl = (Component) => {
+  const InjectedComponent = injectIntl(Component);
 
-const Mixin = {
-  loc: () => '[placeholder]',
+  function WithIntl(props) {
+    const { locale, messages, ...rest } = props;
+    return (
+      <IntlProvider locale={locale} messages={messages}>
+        <InjectedComponent {...rest} />
+      </IntlProvider>
+    );
+  }
+
+  WithIntl.propTypes = {
+    locale: PropTypes.string.isRequired,
+    messages: PropTypes.objectOf(PropTypes.string).isRequired,
+  };
+
+  WithIntl.displayName = `withIntl(${Component.displayName || Component.name})`;
+
+  return WithIntl;
 };
 
-export const Provider = ReactIntl.IntlProvider;
-export const Message = ReactIntl.FormattedMessage;
+const Mixin = {
+  loc: (id) => {
+    const T = (
+      <FormattedMessage id={id} />
+    );
+
+    return T;
+  },
+};
+
+export const Message = FormattedMessage;
 
 export default Mixin;
