@@ -1,8 +1,21 @@
 import React from 'react';
 import { render } from 'react-dom';
+import Greeting from './Greeting';
+
+const intlData = {
+  locales : ['en-US'],
+  messages: {
+    test: {
+      static: 'Hello world',
+      dynamic: 'Hello, {name}',
+    },
+  },
+};
 
 function App(props) {
-  return (<h1>Hello {props.name}</h1>);
+  return (
+    <Greeting name="Eric" {...intlData} />
+  );
 }
 
-render(<App name="Eric" />, document.getElementById('root'));
+render(<App />, document.getElementById('root'));
