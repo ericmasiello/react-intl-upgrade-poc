@@ -4,7 +4,7 @@ import Greeting from './Greeting';
 import OtherGreeting from './OtherGreeting';
 import ConnectedGreeting from './ConnectedGreeting';
 import FormattedGreeting from './FormattedGreeting';
-import { withIntl } from './IntlMixin';
+import { withIntl } from './IntlAdapater';
 
 const i18n = {
   locale: 'en-US',

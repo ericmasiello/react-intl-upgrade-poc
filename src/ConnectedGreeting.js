@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConnectedIntlMessage } from './IntlMixin';
+import { ConnectedIntlMessage } from './IntlAdapater';
 
 function ConnectedGreeting() {
   return (

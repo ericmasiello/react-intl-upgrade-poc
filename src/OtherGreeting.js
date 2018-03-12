@@ -1,6 +1,6 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
-import IntlMixin from './IntlMixin';
+import IntlMixin from './IntlAdapater';
 
 const OtherGreeting = createReactClass({
   mixins: [IntlMixin],
