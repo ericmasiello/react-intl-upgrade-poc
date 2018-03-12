@@ -1,9 +1,9 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
-import MyMixin from './IntlMixin';
+import IntlMixin from './IntlMixin';
 
 const Greeting = createReactClass({
-  mixins: [MyMixin],
+  mixins: [IntlMixin],
   render() {
     return (
       <div>
