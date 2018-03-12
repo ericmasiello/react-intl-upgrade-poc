@@ -1,32 +1,53 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {IntlProvider, injectIntl, FormattedMessage} from 'react-intl';
+import {IntlProvider, injectIntl} from 'react-intl';
 
-let intlFormatMessage;
+class IntlMessageProvider extends React.Component {
+  static contextName = '__intl-message-provider__';
+  static propTypes = {
+    children: PropTypes.node,
+  };
 
-class IntlMessage extends React.Component {
-  componentWillMount() {
-    if (!intlFormatMessage) {
-      intlFormatMessage = this.props.intl.formatMessage;
-    }
+  static childContextTypes = {
+    [IntlMessageProvider.contextName]: PropTypes.shape({
+      formatMessage: PropTypes.func,
+    }).isRequired,
+  }
+
+  getChildContext() {
+    return {
+      [IntlMessageProvider.contextName]: this.props.intl,
+    };
   }
 
   render() {
-    return this.props.children;
+    return React.Children.only(this.props.children);
   }
 }
 
+export function ConnectedIntlMessage(props, context) {
+  return props.render(context[IntlMessageProvider.contextName]);
+}
+
+ConnectedIntlMessage.propTypes = {
+  render: PropTypes.func.isRequired,
+};
+
+ConnectedIntlMessage.contextTypes = {
+  [IntlMessageProvider.contextName]: PropTypes.object.isRequired,
+};
+
 export const withIntl = (Component) => {
-  const InjectedComponent = injectIntl(Component);
-  const WrappedIntlMessage = injectIntl(IntlMessage);
+  // const InjectedComponent = injectIntl(Component);
+  const WrappedIntlMessageProvider = injectIntl(IntlMessageProvider);
 
   function WithIntl(props) {
     const { locale, messages, ...rest } = props;
     return (
       <IntlProvider locale={locale} messages={messages}>
-        <WrappedIntlMessage>
-          <InjectedComponent {...rest} />
-        </WrappedIntlMessage>
+        <WrappedIntlMessageProvider>
+          <Component {...rest} />
+        </WrappedIntlMessageProvider>
       </IntlProvider>
     );
   }
@@ -44,16 +65,16 @@ export const withIntl = (Component) => {
 let didWarnOfMixin = false;
 
 const Mixin = {
-  loc: (id) => {
+  contextTypes: {
+    [IntlMessageProvider.contextName]: PropTypes.object.isRequired,
+  },
+  loc(id) {
     if (!didWarnOfMixin) {
       console.warn('Please stop using mixins.')
       didWarnOfMixin = true;
     }
 
-    if (intlFormatMessage) {
-      return intlFormatMessage({ id });
-    }
-    return <FormattedMessage id={id} />;
+    return this.context[IntlMessageProvider.contextName].formatMessage({ id });
   },
 };
 
