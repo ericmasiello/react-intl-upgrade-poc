@@ -15,7 +15,7 @@ const i18n = {
   },
 };
 
-function App(props) {
+function App() {
   return (
     <div>
       <Greeting name="Demo" />
