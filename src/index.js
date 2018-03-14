@@ -1,33 +1,21 @@
 import React from 'react';
 import { render } from 'react-dom';
-import Greeting from './Greeting';
-import OtherGreeting from './OtherGreeting';
-import ConnectedGreeting from './ConnectedGreeting';
+import {IntlProvider} from 'react-intl';
 import FormattedGreeting from './FormattedGreeting';
-import { withIntl } from './IntlAdapater';
 
 const i18n = {
   locale: 'en-US',
   messages: {
-    'greeting': 'Hello from 2.1!',
-    'greeting.other': 'Hello from the other greeting',
-    'greeting.correct': 'I\'m doing it correctly :)',
+    'greeting.correct': 'I am translated :)',
   },
 };
 
 function App() {
   return (
-    <div>
-      <Greeting name="Demo" />
-      <OtherGreeting />
-      <hr />
-      <ConnectedGreeting />
-      <hr />
+    <IntlProvider locale={i18n.locale} messages={i18n.messages}>
       <FormattedGreeting />
-    </div>
+    </IntlProvider>
   );
 }
 
-const IntlApp = withIntl(App);
-
-render(<IntlApp {...i18n} />, document.getElementById('root'));
+render(<App />, document.getElementById('root'));
