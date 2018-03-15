@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {IntlProvider, injectIntl} from 'react-intl';
 
-class IntlMessageProvider extends React.Component {
+/* Provider */
+export class IntlMessageProvider extends React.Component {
   static contextName = '__intl-message-provider__';
   static propTypes = {
     children: PropTypes.node,
@@ -25,9 +25,10 @@ class IntlMessageProvider extends React.Component {
   }
 }
 
-export function ConnectedIntlMessage(props, context) {
-  return props.render(context[IntlMessageProvider.contextName]);
-}
+/* Connected Component with render props */
+export const ConnectedIntlMessage = (props, context) => (
+  props.render(context[IntlMessageProvider.contextName])
+);
 
 ConnectedIntlMessage.propTypes = {
   render: PropTypes.func.isRequired,
@@ -37,45 +38,33 @@ ConnectedIntlMessage.contextTypes = {
   [IntlMessageProvider.contextName]: PropTypes.object.isRequired,
 };
 
-export const withIntl = (Component) => {
-  // const InjectedComponent = injectIntl(Component);
-  const WrappedIntlMessageProvider = injectIntl(IntlMessageProvider);
+/* HOC for Intl using Connected component */
+export const withIntlMessage = (Component) => {
+  const WithIntlMessage = (props) => (
+    <ConnectedIntlMessage render={(intl) => (
+      <Component {...props} intl={intl} />
+    )} />
+  );
 
-  function WithIntl(props) {
-    const { locale, messages, ...rest } = props;
-    return (
-      <IntlProvider locale={locale} messages={messages}>
-        <WrappedIntlMessageProvider>
-          <Component {...rest} />
-        </WrappedIntlMessageProvider>
-      </IntlProvider>
-    );
-  }
-
-  WithIntl.propTypes = {
-    locale: PropTypes.string.isRequired,
-    messages: PropTypes.objectOf(PropTypes.string).isRequired,
-  };
-
-  WithIntl.displayName = `withIntl(${Component.displayName || Component.name})`;
-
-  return WithIntl;
+  WithIntlMessage.displayName = `WithIntlMessage(${Component.displayName || Component.name})`;
+  return WithIntlMessage;
 };
 
-let didWarnOfMixin = false;
-
-const Mixin = {
+/* Expose data as mixin */
+const makeMixin = ({ didWarnOfMixin = false } = {}) => ({
   contextTypes: {
     [IntlMessageProvider.contextName]: PropTypes.object.isRequired,
   },
   loc(id) {
     if (!didWarnOfMixin) {
-      console.warn('Please stop using mixins.')
+      console.warn('Please, please, plaase... stop using mixins. - ❤️ Eric');
       didWarnOfMixin = true;
     }
 
-    return this.context[IntlMessageProvider.contextName].formatMessage({ id });
-  },
-};
+    const intl = this.context[IntlMessageProvider.contextName];
 
-export default Mixin;
+    return intl.formatMessage({ id });
+  },
+});
+
+export const IntlMixin = makeMixin();
